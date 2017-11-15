@@ -25,6 +25,23 @@ class Hero
   index({ heroid:1 }, { unique: true, name: "heroid_index" })
 end
 
+# Serializers
+class HeroSerializer
+  def initialize(hero)
+    @hero = hero
+  end
+
+  def as_json(*)
+    data = {
+      id:@hero.id.to_s,
+      name:@hero.name,
+      realname:@hero.realname
+    }
+    data[:errors] = @hero.errors if@hero.errors.any?
+    data
+  end
+end
+
 # Endpoints
 get '/' do
   'List of Marvel Heroes...'
@@ -35,9 +52,12 @@ namespace '/api' do
   before do
     content_type 'application/json'
   end
-  # get all heroes:
+
+  # get all heroes
   get '/hero' do
+    heroes = Hero.all
     # serialize to JSON
-    Hero.all.to_json
+    heroes.map { |hero| HeroSerializer.new(hero) }.to_json
   end
+
 end
