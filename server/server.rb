@@ -60,4 +60,11 @@ namespace '/api' do
     heroes.map { |hero| HeroSerializer.new(hero) }.to_json
   end
 
+  # get hero with id
+  get '/hero/:id' do |id|
+    hero = Hero.where(id: id).first
+    halt(404, { message: '404 not found'}.to_json ) unless hero
+    HeroSerializer.new(hero).to_json
+  end
+
 end
