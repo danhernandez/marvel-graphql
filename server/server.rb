@@ -12,17 +12,18 @@ class Hero
   include Mongoid::Document
 
   field :name, type: String
-  field :realname, type: String
-  field :associates, type: String
-  field :heroid, type: String
+  field :alias, type: String
+  field :affiliations, type: Array
 
   validates :name, presence: true
-  validates :realname, presence: true
-  validates :associates, presence: true
-  validates :heroid, presence: true
+  validates :alias, presence: true
+  validates :affiliations, presence: true
 
-  index({ name: 'text' })
-  index({ heroid:1 }, { unique: true, name: "heroid_index" })
+end
+
+class Affiliations
+  include Mongoid::Document
+  has_many :heros
 end
 
 # Serializers
@@ -35,7 +36,8 @@ class HeroSerializer
     data = {
       id:@hero.id.to_s,
       name:@hero.name,
-      realname:@hero.realname
+      alias:@hero.alias,
+      affiliations:@hero.affiliations
     }
     data[:errors] = @hero.errors if@hero.errors.any?
     data
