@@ -1,7 +1,10 @@
 # server.rb
 require 'sinatra'
 require 'sinatra/namespace'
+require 'sinatra/activerecord'
 require 'mongoid'
+
+require_relative 'graphql/schema'
 
 # DB setup
 Mongoid.load! "mongoid.config"
@@ -70,3 +73,13 @@ namespace '/api' do
   end
 
 end
+
+  # post to graphql endpoint
+  post '/graphql' do
+    result = HeroSchema.execute(
+      params[:query],
+      variables: params[:variables],
+      context: { current_hero: nil }
+    )
+    result.to_json
+  end
